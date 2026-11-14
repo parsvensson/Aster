@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			// The remembered theme before first paint, so no page flashes the other one. The layout
+			// effect takes over once the app is live (src/routes/+layout.svelte).
+			(() => {
+				let t = 'system';
+				try {
+					t = localStorage.getItem('aster:theme') || 'system';
+				} catch {}
+				if (t !== 'light' && t !== 'dark' && t !== 'high-contrast')
+					t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+			})();
+		</script>
+		<link href="./_app/immutable/entry/start.BB8O0ZIl.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Qy3lbiMF.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CRzLMJPS.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/a2e_FMQp.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BUoRauue.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CKyVqWoF.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CjXpqzzv.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.DE396K87.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DUb15hk7.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/COiEfhsA.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/INcJgyP9.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Bm9rbtJ7.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Bqxtl-GD.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/OucuI0Yf.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D-KX2Xue.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CWVTvAvr.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/4.BFSvSlBv.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DVCr8Aht.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/y2WcO5Uo.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="icon" href="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%20role='img'%20aria-label='Aster'%3e%3cg%20transform='translate(0%200)'%3e%3cg%20fill='%235A4BD6'%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(60%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(120%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(180%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(240%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(300%2050%2050)'/%3e%3c/g%3e%3ccircle%20cx='50'%20cy='50'%20r='11'%20fill='%23F2B233'/%3e%3c/g%3e%3c/svg%3e"/> <link rel="manifest" href="/manifest.webmanifest"/> <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"/> <meta property="og:site_name" content="Aster"/> <meta property="og:image" content="https://asteruml.app/og.png"/> <meta property="og:image:width" content="1200"/> <meta property="og:image:height" content="630"/> <meta property="og:image:alt" content="Aster: the open-source StarUML alternative. A UML class diagram in the browser: Member and Librarian generalize the abstract class Person."/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:image" content="https://asteruml.app/og.png"/> <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f8"/> <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1f"/> <link rel="preload" href="/_app/immutable/assets/source-sans-3-latin-wght-normal.Bo_j9asI.woff2" as="font" type="font/woff2" crossorigin="anonymous"/><!----><!--rqn88j--><meta name="robots" content="noindex"/><!----><title>Projects in this browser · Aster</title>
+		<link href="./_app/immutable/assets/0.C_5B1OfD.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/4.Cy3eXmHK.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents"><!--[--><!--[--><!--[0--><!--[--><!--[--><!--[--><!--[-1--><!--[--><section class="projects svelte-11o0k70" aria-labelledby="projects-title"><div class="column svelte-11o0k70"><a class="link back svelte-11o0k70" href="./">Back to the start page</a> <div class="mt-4 flex items-start gap-4"><div class="min-w-0 flex-1"><h1 id="projects-title" tabindex="-1" class="text-(length:--text-title) font-semibold">Projects in this browser</h1> <p class="mt-1 text-(length:--text-body) text-chrome-muted">Aster keeps every project you work on here, on this computer only. Download one to keep it as a file.</p></div> <!--[-1--><!--]--></div> <!--[0--><p class="mt-6 text-(length:--text-body) text-chrome-muted" role="status">Reading the projects…</p><!--]--></div></section> <!--[--><!--[--><!--[-1--><!--]--><!--]--><!----><!--]--><!----><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[--><!--[--><!--[-1--><!--]--><!--]--><!----><!--]--><!----><!----><!--]--> <div class="sr-only" aria-live="polite" data-testid="live"></div> <div class="sr-only" aria-live="assertive" role="alert" data-testid="live-alert"></div><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_l0c5dn = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						version: "1794690459244"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("./_app/immutable/entry/start.BB8O0ZIl.js").then(async (kit) => {
+						kit.init(__sveltekit_l0c5dn);
+						const app = await import("./_app/immutable/entry/app.DE396K87.js");
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+
+					if ('serviceWorker' in navigator) {
+						const script_url = './service-worker.js';
+						const policy = globalThis?.window?.trustedTypes?.createPolicy(
+							'sveltekit-trusted-url',
+							{ createScriptURL(url) { return url; } }
+						);
+						const sanitised = policy?.createScriptURL(script_url) ?? script_url;
+						addEventListener('load', function () {
+							navigator.serviceWorker.register(sanitised, { type: 'module' });
+						});
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>

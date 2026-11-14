@@ -1,0 +1,1 @@
+var e={};throw Error(`Could not resolve "react" imported by "@takumi-rs/helpers". Is it installed?`);export{e as default};

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			// The remembered theme before first paint, so no page flashes the other one. The layout
+			// effect takes over once the app is live (src/routes/+layout.svelte).
+			(() => {
+				let t = 'system';
+				try {
+					t = localStorage.getItem('aster:theme') || 'system';
+				} catch {}
+				if (t !== 'light' && t !== 'dark' && t !== 'high-contrast')
+					t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+			})();
+		</script>
+		<link href="./_app/immutable/entry/start.BB8O0ZIl.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Qy3lbiMF.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CRzLMJPS.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/a2e_FMQp.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BUoRauue.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CKyVqWoF.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CjXpqzzv.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.DE396K87.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DUb15hk7.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/COiEfhsA.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/INcJgyP9.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Bm9rbtJ7.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Bqxtl-GD.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/OucuI0Yf.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D-KX2Xue.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CWVTvAvr.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/2.DrTGwjBE.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Dhvc5Htq.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DVCr8Aht.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/3-K1W_by.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="icon" href="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%20role='img'%20aria-label='Aster'%3e%3cg%20transform='translate(0%200)'%3e%3cg%20fill='%235A4BD6'%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(60%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(120%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(180%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(240%2050%2050)'/%3e%3crect%20x='43'%20y='4'%20width='14'%20height='38'%20rx='7'%20transform='rotate(300%2050%2050)'/%3e%3c/g%3e%3ccircle%20cx='50'%20cy='50'%20r='11'%20fill='%23F2B233'/%3e%3c/g%3e%3c/svg%3e"/> <link rel="manifest" href="/manifest.webmanifest"/> <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"/> <meta property="og:site_name" content="Aster"/> <meta property="og:image" content="https://asteruml.app/og.png"/> <meta property="og:image:width" content="1200"/> <meta property="og:image:height" content="630"/> <meta property="og:image:alt" content="Aster: the open-source StarUML alternative. A UML class diagram in the browser: Member and Librarian generalize the abstract class Person."/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:image" content="https://asteruml.app/og.png"/> <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f8"/> <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1f"/> <link rel="preload" href="/_app/immutable/assets/source-sans-3-latin-wght-normal.Bo_j9asI.woff2" as="font" type="font/woff2" crossorigin="anonymous"/><!----><!--1uha8ag--><meta name="description" content="Draw UML class diagrams in your browser. Opens and saves .mdj files, and nothing leaves your machine."/> <link rel="canonical" href="https://asteruml.app/"/> <meta property="og:type" content="website"/> <meta property="og:title" content="The open-source StarUML alternative"/> <meta property="og:description" content="Draw UML class diagrams in your browser. Opens and saves .mdj files, and nothing leaves your machine."/> <meta property="og:url" content="https://asteruml.app/"/> <meta name="twitter:title" content="The open-source StarUML alternative"/> <meta name="twitter:description" content="Draw UML class diagrams in your browser. Opens and saves .mdj files, and nothing leaves your machine."/> <!----><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Aster","url":"https://asteruml.app/","description":"Draw UML class diagrams in your browser. Opens and saves .mdj files, and nothing leaves your machine.","image":"https://asteruml.app/og.png","applicationCategory":"DesignApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","publisher":{"@type":"Organization","name":"EtherCorps","url":"https://ethercorps.io"},"sameAs":["https://github.com/theetherGit/Aster"]}</script><!----><!----><title>Aster · The open-source StarUML alternative</title>
+		<link href="./_app/immutable/assets/0.C_5B1OfD.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/KeyHint.BGnUYBF4.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.D0wo_mMs.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents"><!--[--><!--[--><!--[0--><!--[--><!--[--><!--[--><!--[-1--><!--[--><section class="welcome svelte-5tsm2b" aria-labelledby="welcome-title"><div class="columns svelte-5tsm2b"><div class="left svelte-5tsm2b"><div class="figure svelte-5tsm2b"></div> <h1 id="welcome-title" class="mt-2 text-(length:--text-display) leading-tight font-semibold tracking-tight">Aster</h1> <p class="mt-2 max-w-[400px] text-(length:--text-field) leading-normal text-chrome-muted"><!--[--><!--[-1-->UML class diagrams in the browser. Opens and saves StarUML <!--]--><!--[0--><code class="svelte-5tsm2b">.mdj</code><!--]--><!--[-1--> and its own <!--]--><!--[0--><code class="svelte-5tsm2b">.aster</code><!--]--><!--[-1-->. Nothing leaves this computer.<!--]--><!--]--></p> <div class="actions svelte-5tsm2b"><button type="button" class="inline-flex items-center justify-center gap-1 rounded-control border whitespace-nowrap active:enabled:translate-y-px disabled:opacity-50 aria-disabled:opacity-50 border-accent-fill bg-accent-fill font-semibold text-on-accent [--kbd-edge:color-mix(in_srgb,var(--on-accent)_55%,transparent)] [--kbd-fill:transparent] [--kbd-text:var(--on-accent)] h-(--control-bar) px-3 text-(length:--text-body) action primary"><span>New diagram</span> <kbd data-slot="kbd" class="inline-flex h-(--space-5) min-w-(--space-5) items-center justify-center rounded-control border border-(color:--kbd-edge) bg-(--kbd-fill) px-1 font-sans text-(length:--text-caption) leading-none whitespace-nowrap text-(color:--kbd-text)"><!--[-1--><!---->Ctrl+N<!----><!--]--></kbd><!----><!----></button><!----> <button type="button" class="inline-flex items-center justify-center gap-1 rounded-control border font-medium whitespace-nowrap active:enabled:translate-y-px disabled:opacity-50 aria-disabled:opacity-50 border-control-border text-chrome-text hover:enabled:border-accent hover:enabled:bg-chrome-surface h-(--control-bar) px-3 text-(length:--text-body) action"><span class="inline-flex items-baseline gap-1.5"><span>Start from a template</span> <span class="text-(length:--text-small) text-chrome-muted">real projects</span></span><!----></button><!----> <button type="button" class="inline-flex items-center justify-center gap-1 rounded-control border font-medium whitespace-nowrap active:enabled:translate-y-px disabled:opacity-50 aria-disabled:opacity-50 border-control-border text-chrome-text hover:enabled:border-accent hover:enabled:bg-chrome-surface h-(--control-bar) px-3 text-(length:--text-body) action"><span class="inline-flex items-baseline gap-1.5"><span>Open file</span> <span class="text-(length:--text-small) text-chrome-muted">.aster or .mdj</span></span> <kbd data-slot="kbd" class="inline-flex h-(--space-5) min-w-(--space-5) items-center justify-center rounded-control border border-(color:--kbd-edge) bg-(--kbd-fill) px-1 font-sans text-(length:--text-caption) leading-none whitespace-nowrap text-(color:--kbd-text)"><!--[-1--><!---->Ctrl+O<!----><!--]--></kbd><!----><!----></button><!----></div> <p class="mt-2.5 text-(length:--text-small) text-chrome-muted">Or drop a file anywhere on this window.</p> <div class="footer svelte-5tsm2b"><p>Coming from StarUML? <button type="button" class="link svelte-5tsm2b">Use the Classic layout</button>; your shortcuts still work.</p> <p><span><!--[--><!--[0-->Press <!--]--><!--[1--><kbd data-slot="kbd" class="inline-flex h-(--space-5) min-w-(--space-5) items-center justify-center rounded-control border border-(color:--kbd-edge) bg-(--kbd-fill) px-1 font-sans text-(length:--text-caption) leading-none whitespace-nowrap text-(color:--kbd-text)"><!--[-1--><!---->?<!----><!--]--></kbd><!--]--><!--[0--> any time for every shortcut.<!--]--><!--]--></span><!----></p> <p>Open source by <a class="link svelte-5tsm2b" href="https://ethercorps.io" rel="noopener">EtherCorps</a>. Code and issues on <a class="link svelte-5tsm2b" href="https://github.com/theetherGit/Aster" rel="noopener">GitHub</a>.</p></div></div> <div class="right svelte-5tsm2b"><div class="card sample svelte-5tsm2b"><div class="preview svelte-5tsm2b"><!--[-1--><!--]--></div> <div class="flex items-center gap-3 px-3.5 py-3"><div class="min-w-0 flex-1"><p class="text-(length:--text-body) font-semibold">Explore Aster, drawn in Aster</p> <p class="mt-0.5 text-(length:--text-small) text-chrome-muted">Its model, its packages, and an object diagram of a project in memory. Edit it freely; the first change makes it your own project.</p></div> <button type="button" class="inline-flex items-center justify-center gap-1 rounded-control border font-medium whitespace-nowrap active:enabled:translate-y-px disabled:opacity-50 aria-disabled:opacity-50 border-control-border text-chrome-text hover:enabled:border-accent hover:enabled:bg-chrome-surface h-(--control-icon) px-2 text-(length:--text-small) shrink-0"><span>Open the demo</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><!--[--><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path><!--]--></svg><!----><!----></button><!----></div></div> <div class="card recent svelte-5tsm2b"><div class="mb-1.5 flex h-6 items-center"><h2 class="text-(length:--text-caption) font-semibold tracking-[0.05em] text-chrome-muted uppercase">Recent</h2> <span class="flex-1"></span> <a class="link me-2 text-(length:--text-small) svelte-5tsm2b" href="./projects">View all</a> <!--[-1--><!--]--></div> <!--[-1--><p class="pt-1.5 pb-2 text-(length:--text-small) text-chrome-muted">Files you open or save appear here, with where they live.</p><!--]--></div></div></div></section><!----> <!--[-1--><!--]--><!----><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[--><!--[--><!--[-1--><!--]--><!--]--><!----><!--]--><!----><!----><!--]--> <div class="sr-only" aria-live="polite" data-testid="live"></div> <div class="sr-only" aria-live="assertive" role="alert" data-testid="live-alert"></div><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_l0c5dn = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						version: "1794690459244"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("./_app/immutable/entry/start.BB8O0ZIl.js").then(async (kit) => {
+						kit.init(__sveltekit_l0c5dn);
+						const app = await import("./_app/immutable/entry/app.DE396K87.js");
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+
+					if ('serviceWorker' in navigator) {
+						const script_url = './service-worker.js';
+						const policy = globalThis?.window?.trustedTypes?.createPolicy(
+							'sveltekit-trusted-url',
+							{ createScriptURL(url) { return url; } }
+						);
+						const sanitised = policy?.createScriptURL(script_url) ?? script_url;
+						addEventListener('load', function () {
+							navigator.serviceWorker.register(sanitised, { type: 'module' });
+						});
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		<script>
+			// The remembered theme before first paint, so no page flashes the other one. The layout
+			// effect takes over once the app is live (src/routes/+layout.svelte).
+			(() => {
+				let t = 'system';
+				try {
+					t = localStorage.getItem('aster:theme') || 'system';
+				} catch {}
+				if (t !== 'light' && t !== 'dark' && t !== 'high-contrast')
+					t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+			})();
+		</script>
+		<link href="/_app/immutable/entry/start.BB8O0ZIl.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Qy3lbiMF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CRzLMJPS.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/a2e_FMQp.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BUoRauue.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CKyVqWoF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CjXpqzzv.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.DE396K87.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.DUb15hk7.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/COiEfhsA.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/INcJgyP9.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bm9rbtJ7.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Bqxtl-GD.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/OucuI0Yf.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/D-KX2Xue.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/CWVTvAvr.js" rel="modulepreload">
+		
+		<link href="/_app/immutable/assets/0.C_5B1OfD.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_l0c5dn = {
+						base: "",
+						version: "1794690459244"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("/_app/immutable/entry/start.BB8O0ZIl.js").then(async (kit) => {
+						kit.init(__sveltekit_l0c5dn);
+						const app = await import("/_app/immutable/entry/app.DE396K87.js");
+						kit.start(app, element);
+					});
+
+					if ('serviceWorker' in navigator) {
+						const script_url = '/service-worker.js';
+						const policy = globalThis?.window?.trustedTypes?.createPolicy(
+							'sveltekit-trusted-url',
+							{ createScriptURL(url) { return url; } }
+						);
+						const sanitised = policy?.createScriptURL(script_url) ?? script_url;
+						addEventListener('load', function () {
+							navigator.serviceWorker.register(sanitised, { type: 'module' });
+						});
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>
