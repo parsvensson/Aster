@@ -55,7 +55,9 @@ Each is the same model plus a renderer and a text dialect.
 
 ## Co-creating with Claude Code
 
-With `pnpm dev` running, a Claude Code session in this folder can read the open model and edit it while you keep working in the same tab: every change it makes is an undo step in your diagram. Nothing is installed beyond the dev server; the bridge exists only there, never in the built site. See [`docs/mcp.md`](docs/mcp.md).
+With `pnpm dev` running, a Claude Code session in this folder can read the open model and edit it while you keep working in the same tab: every change it makes is an undo step in your diagram. Nothing is installed beyond the dev server. See [`docs/mcp.md`](docs/mcp.md).
+
+The same bridge is packaged as a Claude Code plugin for any repository: `/plugin marketplace add parsvensson/Aster`, then `/plugin install aster@aster`. Ask Claude to work on a `.mdj` or `.aster` file there; it opens in a browser tab, you both edit it, and the file in the repository follows every change. See [`docs/plugin.md`](docs/plugin.md).
 
 ## Contributing
 

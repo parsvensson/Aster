@@ -13,8 +13,9 @@ remaining slices are in [`mcp-bridge.md`](mcp-bridge.md).
 3. Ask away: "what's in the diagram?", "add a Payment class that Order composes", "tidy the
    members of Account".
 
-Nothing is installed or configured beyond that. The bridge answers the local computer only,
-exists only on the dev server, and is not in the built site.
+Nothing is installed or configured beyond that. The bridge answers the local computer only.
+Outside this repository the same bridge comes as a Claude Code plugin that also keeps a model
+file on disk in step with the tab: see [`plugin.md`](plugin.md).
 
 ## Tools
 

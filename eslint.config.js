@@ -12,6 +12,8 @@ export default defineConfig(
 	includeIgnoreFile(gitignorePath),
 	// The docs site (Nimbus, Astro) is its own project, with its own lockfile and checks.
 	{ ignores: ['docs-site/'] },
+	// The Claude plugin's built app and bundled server (pnpm plugin:build), checked in as built.
+	{ ignores: ['plugin/app/', 'plugin/server.js'] },
 	js.configs.recommended,
 	ts.configs.recommended,
 	svelte.configs.recommended,

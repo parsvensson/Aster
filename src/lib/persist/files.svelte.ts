@@ -176,8 +176,12 @@ export function loadFixture(project: Project, route: 'sample' | 'demo' | 'notati
 	persist.route = route;
 }
 
-/** Open a file: `.aster` validates and loads; `.mdj` restores its autosave on a hash match, else parses. */
-export async function openFile(f: OpenedFile) {
+/**
+ * Open a file: `.aster` validates and loads; `.mdj` restores its autosave on a hash match, else
+ * parses. `fresh` always parses: the bytes are the truth (the MCP bridge's file on disk), and an
+ * autosave that ran ahead of them must not come back.
+ */
+export async function openFile(f: OpenedFile, fresh = false) {
 	if (isPuml(f)) return openPuml(f);
 	files.notice = { kind: 'opening', file: f.name };
 	// By content first: a StarUML file renamed `.aster` still opens as StarUML (and the reverse).
@@ -193,7 +197,7 @@ export async function openFile(f: OpenedFile) {
 			// The opened file wins: an autosave made from these exact bytes carries the edits
 			// (and undo history) since; a file changed in StarUML never matches.
 			const sourceHash = await hashBytes(f.data);
-			const saved = findBySourceHash(sourceHash);
+			const saved = fresh ? undefined : findBySourceHash(sourceHash);
 			if (saved && (await openSaved(saved.id))) {
 				files.notice = { kind: 'restored', file: f.name };
 			} else {
@@ -297,6 +301,36 @@ export function newProject(refocus = true): Promise<void> {
 		// After the menu that triggered this closes and puts focus back on its trigger.
 		if (refocus) requestAnimationFrame(() => canvasFocus.focus());
 	});
+}
+
+/**
+ * A new project for a file that does not exist yet (the MCP bridge, docs/plugin.md): named after
+ * the file, one empty class diagram, unsaved until the bridge writes it.
+ */
+export function newProjectFor(fileName: string, diagramName?: string) {
+	const name = fileName.replace(/\.(aster(\.json)?|mdj)$/i, '') || t('model.untitled');
+	const project = createProject({ name });
+	project.diagrams.push(createDiagram({ name: diagramName?.trim() || t('model.newDiagramName') }));
+	startFresh();
+	projectStore.load(project);
+	files.current = { name: fileName, format: formatOf(fileName) };
+	files.origin = null;
+	files.knownModified = null;
+	files.savedVersion = -1;
+	files.lastSavedAt = null;
+	files.bannerDismissed = false;
+	files.notice = null;
+	mintSlug();
+}
+
+/** The MCP bridge wrote `text`, the project at `version`, to the open file: it is saved. */
+export async function markWritten(text: string, version: number) {
+	const current = files.current;
+	if (!current) return;
+	if (current.format === 'mdj')
+		files.origin = { kind: 'staruml', sourceHash: await hashBytes(text), fileName: current.name };
+	files.savedVersion = version;
+	files.lastSavedAt = Date.now();
 }
 
 /** The text of the project in a format. */

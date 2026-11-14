@@ -26,3 +26,7 @@ docs/figures/
 
 # The docs site (Nimbus, Astro) is its own project, formatted by its own conventions
 docs-site/
+
+# The Claude plugin's built app and bundled server (pnpm plugin:build), checked in as built
+plugin/app/
+plugin/server.js

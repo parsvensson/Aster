@@ -3,24 +3,16 @@
  * `/__mcp` (Streamable HTTP, stateless, JSON responses) for Claude Code, and the tab's side of
  * the conversation over Vite's own HMR socket. Nothing here reaches a production build.
  */
-import type { IncomingMessage } from 'node:http';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { Plugin, WebSocketClient } from 'vite';
 import type { Changed, Hello, BridgeResponse } from '#lib/bridge/protocol.ts';
 import { Broker } from './broker.ts';
+import { isLocal } from './local.ts';
 import { createMcpServer } from './server.ts';
 
 export const MCP_PATH = '/__mcp';
 
-const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
-/** Only the computer the dev server runs on may talk to the bridge, whatever `--host` says. */
-export const isLocal = (req: Pick<IncomingMessage, 'socket' | 'headers'>) => {
-	const host = (req.headers.host ?? '').replace(/:\d+$/, '').replace(/^\[|\]$/g, '');
-	return (
-		LOOPBACK.has(req.socket.remoteAddress ?? '') &&
-		(host === 'localhost' || LOOPBACK.has(host) || host.endsWith('.localhost'))
-	);
-};
+export { isLocal };
 
 export interface AsterMcpOptions {
 	path?: string;

@@ -11,6 +11,7 @@
 	import TemplateGallery from '#lib/panels/TemplateGallery.svelte';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { Tooltip } from 'bits-ui';
+	import type { Channel } from '#lib/bridge/protocol.ts';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
@@ -36,16 +37,39 @@
 	$effect(() => {
 		document.documentElement.dataset.layout = ui.layoutPreset;
 	});
-	// The MCP bridge for Claude Code (docs/mcp.md): dev server only. `import.meta.hot` is undefined
-	// in a build, so the import and the module are dropped from it.
+	// The MCP bridge for Claude Code: over Vite's HMR socket under `pnpm dev` (docs/mcp.md), over
+	// HTTP when the Claude plugin's own server serves this build on this computer
+	// (docs/plugin.md). The public site never asks: it is not on a local host.
 	$effect(() => {
 		const hot = import.meta.hot;
-		if (!hot) return;
 		let stop: (() => void) | undefined;
 		let gone = false;
-		import('#lib/bridge/client.svelte.ts').then((m) => {
-			if (!gone) stop = m.startBridge(hot);
-		});
+		const start = async () => {
+			let channel: Channel | null;
+			let close = () => {};
+			if (hot)
+				channel = {
+					on: (event, fn) => hot.on(event, fn as (payload: unknown) => void),
+					off: (event, fn) => hot.off(event, fn as (payload: unknown) => void),
+					send: (event, payload) => hot.send(event, payload)
+				};
+			else {
+				const { httpChannel, isLocalHost } = await import('#lib/bridge/http.ts');
+				if (!isLocalHost(location.hostname)) return;
+				const http = await httpChannel();
+				channel = http;
+				close = () => http?.close();
+			}
+			if (!channel) return;
+			const { startBridge } = await import('#lib/bridge/client.svelte.ts');
+			if (gone) return close();
+			const end = startBridge(channel);
+			stop = () => {
+				end();
+				close();
+			};
+		};
+		void start();
 		return () => {
 			gone = true;
 			stop?.();

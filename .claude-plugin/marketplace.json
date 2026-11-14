@@ -1,0 +1,12 @@
+{
+	"name": "aster",
+	"description": "Aster, the browser-based UML class modeller, as a Claude Code plugin.",
+	"owner": { "name": "parsvensson" },
+	"plugins": [
+		{
+			"name": "aster",
+			"source": "./plugin",
+			"description": "Co-edit UML class models (StarUML .mdj, .aster) with Claude: the model opens in a browser tab, Claude and you edit the same diagram, and the file in the repository follows every change."
+		}
+	]
+}

@@ -83,6 +83,8 @@ import type {
 	LayoutParams,
 	Method,
 	MoveToPackageParams,
+	OpenFileParams,
+	OpenFileResult,
 	RenderParams,
 	RenderResult,
 	Results,
@@ -137,6 +139,8 @@ export interface Context {
 		direction: NonNullable<LayoutParams['direction']>,
 		only: Id[] | null
 	): Promise<string | null>;
+	/** Makes a file from the MCP server's disk the open project (the plugin's server only). */
+	openFile?(p: OpenFileParams): Promise<OpenFileResult>;
 }
 
 export class BridgeError extends Error {
@@ -1089,6 +1093,11 @@ async function result<M extends Method>(req: BridgeRequest<M>, ctx: Context): Pr
 			const p = (r as BridgeRequest<'run'>).params;
 			const plan = planRun(p.label, p.commands);
 			return { label: ctx.run(plan), version: ctx.version } as Results[M];
+		}
+		case 'open_file': {
+			if (!ctx.openFile)
+				throw new BridgeError('failed', 'This tab cannot open files from the MCP server.');
+			return (await ctx.openFile((r as BridgeRequest<'open_file'>).params)) as Results[M];
 		}
 		default:
 			throw new BridgeError('unknown_method', `Unknown method ${String(r.method)}.`);

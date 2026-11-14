@@ -1,5 +1,5 @@
 /**
- * The dev server's side of the bridge (docs/mcp.md): which tabs are connected, which one answers,
+ * The server's side of the bridge (docs/mcp.md, docs/plugin.md): which tabs are connected, which one answers,
  * the requests in flight, and a short log of what changed. Knows nothing of Vite or MCP; the
  * plugin feeds it socket events and the MCP tools call `request`.
  */
@@ -48,6 +48,8 @@ export class Broker {
 	#pending = new Map<string, Pending>();
 	#changes: Changed[] = [];
 	#n = 0;
+	/** What to tell Claude when no tab is connected: where to open one. */
+	noTabHint = 'Open http://localhost:5173/ in a browser while `pnpm dev` runs.';
 
 	constructor(
 		readonly timeoutMs = 10_000,
@@ -131,10 +133,7 @@ export class Broker {
 		const tab = this.#active;
 		if (!tab)
 			return Promise.reject(
-				new BrokerError(
-					'no_tab',
-					'No Aster tab is connected. Open http://localhost:5173/ in a browser while `pnpm dev` runs.'
-				)
+				new BrokerError('no_tab', `No Aster tab is connected. ${this.noTabHint}`)
 			);
 		const id = `r${++this.#n}`;
 		const req: BridgeRequest<M> = { id, method, params };

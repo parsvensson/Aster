@@ -14,7 +14,8 @@
 		"test": "vitest --run",
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
-		"tokens": "node scripts/tokens.ts"
+		"tokens": "node scripts/tokens.ts",
+		"plugin:build": "node scripts/plugin-build.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

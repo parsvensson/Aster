@@ -1,6 +1,6 @@
 /**
- * The bridge between the dev server's MCP endpoint and the open tab (docs/mcp.md). The plugin
- * asks with a `BridgeRequest` over Vite's HMR socket, the tab answers with a `BridgeResponse`,
+ * The bridge between the MCP server and the open tab (docs/mcp.md, docs/plugin.md). The server
+ * asks with a `BridgeRequest` over a `Channel`, the tab answers with a `BridgeResponse`,
  * and volunteers a `Hello` when it connects, gains focus or opens a project, and a `Changed`
  * after every command. Types only; both sides import this file.
  */
@@ -27,6 +27,46 @@ export interface Hello {
 	route: string | null;
 	url: string;
 	version: number;
+	/** The file the MCP server keeps on disk for this tab (`open_file`), as the server named it. */
+	file?: string | null;
+}
+
+/** `open_file`: a file from the MCP server's disk becomes the tab's project (docs/plugin.md). */
+export interface OpenFileParams {
+	/** The server's name for the file (relative to the repository); echoed in every save. */
+	path: string;
+	/** The file's own name, which decides the format: `.mdj`, `.aster` or `.aster.json`. */
+	name: string;
+	/** The file's text; null when it does not exist yet: a new project that the first save creates. */
+	text: string | null;
+	/** The diagram to show, by id or name; a new file's first diagram takes this name. */
+	diagram?: string;
+}
+export interface OpenFileResult {
+	project: string;
+	/** True when the file did not exist and a new project was made for it. */
+	created: boolean;
+	diagramId: Id;
+	diagram: string;
+	/** False when `diagram` named none of the file's diagrams; the first one shows instead. */
+	diagramFound: boolean;
+	diagrams: DiagramInfo[];
+	route: string | null;
+	url: string;
+	version: number;
+}
+/** The tab, after a change to a file opened with `open_file`: the text to write. */
+export interface Save {
+	path: string;
+	text: string;
+	version: number;
+}
+/** The server's answer to a `Save`. `stale` means the file changed on disk; a reload follows. */
+export interface Saved {
+	path: string;
+	version: number;
+	ok: boolean;
+	error?: string;
 }
 
 /** One model version: what the last command was, as the undo menu names it. */
@@ -309,6 +349,7 @@ export interface Params {
 	redo: Record<string, never>;
 	/** Registered commands by id and args (the catalogue `aster://commands`), as one undo step. */
 	run: { label: string; commands: SerialisedCommand[] };
+	open_file: OpenFileParams;
 }
 export interface Results {
 	status: Status;
@@ -337,6 +378,7 @@ export interface Results {
 	undo: WriteResult;
 	redo: WriteResult;
 	run: WriteResult;
+	open_file: OpenFileResult;
 }
 export type Method = keyof Params;
 
@@ -379,8 +421,21 @@ export const EVENTS = {
 	who: 'aster:who',
 	request: 'aster:req',
 	response: 'aster:res',
-	changed: 'aster:changed'
+	changed: 'aster:changed',
+	/** The tab, with the text of a file opened by `open_file`; the server answers `saved`. */
+	save: 'aster:save',
+	saved: 'aster:saved'
 } as const;
+
+/**
+ * What carries the events: Vite's HMR socket under `pnpm dev`, plain HTTP (http.ts) when the
+ * plugin's own server serves the built app.
+ */
+export interface Channel {
+	on(event: string, fn: (payload: never) => void): void;
+	off(event: string, fn: (payload: never) => void): void;
+	send(event: string, payload: unknown): void;
+}
 
 declare module 'vite/types/customEvent.d.ts' {
 	interface CustomEventMap {
@@ -389,5 +444,7 @@ declare module 'vite/types/customEvent.d.ts' {
 		'aster:req': BridgeRequest;
 		'aster:res': BridgeResponse;
 		'aster:changed': Changed;
+		'aster:save': Save;
+		'aster:saved': Saved;
 	}
 }

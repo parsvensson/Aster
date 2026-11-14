@@ -10,23 +10,6 @@ import { COMMANDS_MD } from './catalogue.ts';
 
 export const SERVER_INFO = { name: 'aster', version: '0.1.0' };
 
-const text = (s: string): CallToolResult => ({ content: [{ type: 'text', text: s }] });
-const json = (v: unknown) => text(JSON.stringify(v, null, 2));
-const failed = (e: unknown): CallToolResult => ({
-	isError: true,
-	content: [
-		{
-			type: 'text',
-			text:
-				e instanceof BrokerError
-					? `${e.code}: ${e.message}`
-					: e instanceof Error
-						? e.message
-						: String(e)
-		}
-	]
-});
-
 const diagram = z
 	.string()
 	.optional()
@@ -75,8 +58,25 @@ const written = (r: { label: string | null; version: number }, more = '') =>
 			: `Nothing changed (version ${r.version}).${more}`
 	);
 
-export function createMcpServer(broker: Broker): McpServer {
-	const server = new McpServer(SERVER_INFO);
+export const text = (s: string): CallToolResult => ({ content: [{ type: 'text', text: s }] });
+export const json = (v: unknown) => text(JSON.stringify(v, null, 2));
+export const failed = (e: unknown): CallToolResult => ({
+	isError: true,
+	content: [
+		{
+			type: 'text',
+			text:
+				e instanceof BrokerError
+					? `${e.code}: ${e.message}`
+					: e instanceof Error
+						? e.message
+						: String(e)
+		}
+	]
+});
+
+export function createMcpServer(broker: Broker, instructions?: string): McpServer {
+	const server = new McpServer(SERVER_INFO, instructions ? { instructions } : undefined);
 
 	server.registerTool(
 		'aster_status',

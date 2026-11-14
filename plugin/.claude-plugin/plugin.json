@@ -1,0 +1,10 @@
+{
+	"name": "aster",
+	"version": "0.1.0",
+	"description": "Co-edit UML class models (StarUML .mdj, .aster) with Claude: the model opens in a browser tab, Claude and you edit the same diagram, and the file in the repository follows every change.",
+	"author": { "name": "parsvensson" },
+	"homepage": "https://asteruml.app",
+	"repository": "https://github.com/parsvensson/Aster",
+	"license": "MIT",
+	"keywords": ["uml", "staruml", "mdj", "class-diagram", "modelling"]
+}
