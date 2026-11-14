@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { asterMcp } from './scripts/mcp/plugin.ts';
 
 export default defineConfig({
 	plugins: [
@@ -14,8 +15,12 @@ export default defineConfig({
 			},
 			// `/design/<slug>` is resolved on the client; unknown paths get the fallback shell.
 			adapter: adapter({ fallback: '404.html' })
-		})
+		}),
+		// Claude Code's way into the open tab (docs/mcp.md); `pnpm dev` only.
+		asterMcp()
 	],
+	// A fixed port, so .mcp.json can name the bridge's URL.
+	server: { port: 5173, strictPort: true },
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

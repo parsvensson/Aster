@@ -36,6 +36,21 @@
 	$effect(() => {
 		document.documentElement.dataset.layout = ui.layoutPreset;
 	});
+	// The MCP bridge for Claude Code (docs/mcp.md): dev server only. `import.meta.hot` is undefined
+	// in a build, so the import and the module are dropped from it.
+	$effect(() => {
+		const hot = import.meta.hot;
+		if (!hot) return;
+		let stop: (() => void) | undefined;
+		let gone = false;
+		import('#lib/bridge/client.svelte.ts').then((m) => {
+			if (!gone) stop = m.startBridge(hot);
+		});
+		return () => {
+			gone = true;
+			stop?.();
+		};
+	});
 </script>
 
 <svelte:head>

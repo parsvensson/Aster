@@ -18,6 +18,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
+		"@modelcontextprotocol/sdk": "^1.32.2",
 		"@playwright/test": "^1.60.0",
 		"@sveltejs/adapter-static": "^4.0.0",
 		"@sveltejs/kit": "^3.0.0",
@@ -38,7 +39,8 @@
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.3.0",
 		"vitest": "^4.1.8",
-		"wrangler": "^4.151.1"
+		"wrangler": "^4.151.1",
+		"zod": "^4.6.7"
 	},
 	"imports": {
 		"#lib": "./src/lib/index.js",

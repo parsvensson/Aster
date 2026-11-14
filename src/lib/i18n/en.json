@@ -874,6 +874,7 @@
 	"tip.composition": "Composition: {whole} owns {part}; the part goes with the whole",
 	"tip.aggregation": "Aggregation: {whole} has {part} as a part, which may be shared",
 	"cmd.textEdit": "edit the text view",
+	"cmd.bridge": "{label} via MCP",
 	"import.imported": "Imported {file} as a new project",
 	"cmd.exportPuml": "Export the diagram as PlantUML (.puml)",
 	"text.label": "PlantUML text",
