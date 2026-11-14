@@ -56,6 +56,12 @@ Claude Code ──MCP over HTTP──▶ vite dev (scripts/mcp/plugin.ts)
   pure functions over the model, so `tests/unit/bridge.test.ts` runs it with a project and a
   command stack and no browser. `tests/unit/bridge-server.test.ts` drives the real MCP server
   through an in-memory transport against a tab stood in by the same handler.
-- The tab that said hello last (on connect, on focus, when a project opens) is the one that
-  answers. Open two tabs and the one you click into takes over.
+- The tab that said hello last (on connect, on focus, when it becomes visible, when a project
+  opens) is the one that answers. Open two tabs and the one you click into takes over;
+  `aster_status` lists them all and `aster_use_tab` picks one by url, route or project name.
+- When the dev server restarts (it does whenever `scripts/mcp/` changes), it asks every socket
+  that connects who it is, and the tabs say hello again. A tab Chrome has put to sleep in the
+  background answers when it is next brought to the front.
 - A tool call waits ten seconds for the tab, then fails with a message that says so.
+- `tests/unit/bridge-plugin.test.ts` runs the whole chain against a real Vite dev server: an MCP
+  client over HTTP, the plugin, the HMR socket, a tab answering with the real handler.

@@ -183,6 +183,7 @@ describe('MCP server', () => {
 			'aster_status',
 			'aster_undo',
 			'aster_update',
+			'aster_use_tab',
 			'aster_validate'
 		]);
 	});
@@ -220,7 +221,7 @@ describe('MCP server', () => {
 
 		const status = JSON.parse(textOf(await call('aster_status')));
 		expect(status.project.name).toBe(project.name);
-		expect(status.tabs).toBe(1);
+		expect(status.tabs).toHaveLength(1);
 
 		const got = textOf(await call('aster_get_text', {}));
 		expect(got).toMatch(/^\/\/ .* \(d1\), version 0\n@startuml/);
@@ -255,7 +256,7 @@ describe('MCP server', () => {
 			{ version: 1, label: 'edit the text view via MCP', diagramId: 'd1' }
 		]);
 		expect(since.tab.project).toBe('Project 1');
-		expect(since.tabs).toBe(1);
+		expect(since.tabs).toHaveLength(1);
 	});
 
 	it('returns the PNG as an image block and the SVG as text', async () => {

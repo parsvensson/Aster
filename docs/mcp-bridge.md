@@ -1,6 +1,6 @@
 # MCP bridge: Claude Code and the open Aster tab
 
-A proposal, 14 Nov 2026. Slices 1 to 3 of the build plan below are built: see [`mcp.md`](mcp.md) for how to connect and what the tools do. Slice 4 (multi-tab polish, reconnect, the integration test) remains. The goal: with `pnpm dev` running and a
+A proposal, 14 Nov 2026. All four slices of the build plan below are built: see [`mcp.md`](mcp.md) for how to connect and what the tools do. The goal: with `pnpm dev` running and a
 diagram open in the browser, a Claude Code session in this repository can read the model, change
 it through the same commands the UI uses, and see the result, while the person keeps editing the
 same diagram. Co-creation, not generation: Claude's edits land as undo steps next to the user's.

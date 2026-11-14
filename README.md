@@ -53,6 +53,10 @@ Each is the same model plus a renderer and a text dialect.
 - v0.5: real-time collaboration over a self-hostable relay; comments; version history.
 - Not planned: accounts as a requirement, cloud-only storage, telemetry, a mobile authoring layout (viewing on mobile is in scope from v0.2), SysML/ERD/BPMN and the other non-UML notations.
 
+## Co-creating with Claude Code
+
+With `pnpm dev` running, a Claude Code session in this folder can read the open model and edit it while you keep working in the same tab: every change it makes is an undo step in your diagram. Nothing is installed beyond the dev server; the bridge exists only there, never in the built site. See [`docs/mcp.md`](docs/mcp.md).
+
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, the tests, and the rules that keep the model the single source of truth and the app accessible. The specification is in [`docs/spec/`](docs/spec/); every deviation from it is one line in [`DECISIONS.md`](DECISIONS.md). Found a `.mdj` that does not round-trip? Open a compatibility report and attach the file.

@@ -11,7 +11,8 @@ import type {
 	Hello,
 	Method,
 	Params,
-	Results
+	Results,
+	TabInfo
 } from '#lib/bridge/protocol.ts';
 
 export type Send = (event: string, payload?: unknown) => void;
@@ -64,10 +65,41 @@ export class Broker {
 		return this.#changes;
 	}
 
+	/** The tabs for the outside: newest first, the active one marked. */
+	get infos(): TabInfo[] {
+		return this.tabs.map((t) => ({
+			...t.hello,
+			at: new Date(t.at).toISOString(),
+			active: t === this.#active
+		}));
+	}
+
 	hello(key: object, send: Send, hello: Hello) {
 		const tab: Tab = { key, send, hello, at: this.now() };
 		this.#tabs.set(key, tab);
 		this.#active = tab;
+	}
+
+	/**
+	 * Makes the tab whose url, route or project name matches answer from now on (until another
+	 * tab says hello: a click into a tab does that). Throws when none or several match.
+	 */
+	activate(match: string): Tab {
+		const q = match.trim().toLowerCase();
+		const hits = this.tabs.filter((t) =>
+			[t.hello.url, t.hello.route ?? '', t.hello.project].some((v) => v.toLowerCase() === q)
+		);
+		if (hits.length === 1) {
+			this.#active = hits[0];
+			return hits[0];
+		}
+		const list = this.tabs.map((t) => `${t.hello.project} (${t.hello.url})`).join(', ');
+		throw new BrokerError(
+			hits.length ? 'ambiguous' : 'no_tab',
+			hits.length
+				? `${hits.length} tabs match ${match}: ${list}. Use the url.`
+				: `No connected tab matches ${match}. Connected: ${list || 'none'}.`
+		);
 	}
 
 	gone(key: object) {

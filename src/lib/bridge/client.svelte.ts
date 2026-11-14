@@ -101,10 +101,17 @@ export function startBridge(hot: ViteHotContext): () => void {
 	};
 	const onFocus = () => untrack(hello);
 
+	const onVisible = () => {
+		if (document.visibilityState === 'visible') onFocus();
+	};
+
 	hot.on(EVENTS.request, onRequest);
-	// The socket came back after a dev server restart: say hello again.
+	// The socket came back after a dev server restart, or the server asks who is there (it just
+	// started, and we loaded before it): say hello again. So does a tab brought to the front.
 	hot.on('vite:ws:connect', onFocus);
+	hot.on(EVENTS.who, onFocus);
 	window.addEventListener('focus', onFocus);
+	document.addEventListener('visibilitychange', onVisible);
 
 	const stop = $effect.root(() => {
 		// Every command (and undo, redo, load) bumps the version: tell the server what it was.
@@ -128,6 +135,8 @@ export function startBridge(hot: ViteHotContext): () => void {
 		stop();
 		hot.off(EVENTS.request, onRequest);
 		hot.off('vite:ws:connect', onFocus);
+		hot.off(EVENTS.who, onFocus);
 		window.removeEventListener('focus', onFocus);
+		document.removeEventListener('visibilitychange', onVisible);
 	};
 }

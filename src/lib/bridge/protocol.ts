@@ -365,8 +365,18 @@ export type BridgeResponse<M extends Method = Method> =
 	| { id: string; ok: true; version: number; result: Results[M] }
 	| { id: string; ok: false; code: ErrorCode; error: string; version?: number };
 
+/** One connected tab, as the dev server lists them. */
+export interface TabInfo extends Hello {
+	/** When it last said hello, ISO 8601. */
+	at: string;
+	/** The tab that answers requests right now. */
+	active: boolean;
+}
+
 export const EVENTS = {
 	hello: 'aster:hello',
+	/** The server, to every tab, after a (re)connection: say hello again. */
+	who: 'aster:who',
 	request: 'aster:req',
 	response: 'aster:res',
 	changed: 'aster:changed'
@@ -375,6 +385,7 @@ export const EVENTS = {
 declare module 'vite/types/customEvent.d.ts' {
 	interface CustomEventMap {
 		'aster:hello': Hello;
+		'aster:who': undefined;
 		'aster:req': BridgeRequest;
 		'aster:res': BridgeResponse;
 		'aster:changed': Changed;

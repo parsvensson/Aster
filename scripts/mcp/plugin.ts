@@ -26,6 +26,10 @@ export interface AsterMcpOptions {
 	path?: string;
 	/** How long a tool call waits for the tab. */
 	timeoutMs?: number;
+	/** Apply even under vitest (the integration test); never set it in vite.config.ts. */
+	force?: boolean;
+	/** The broker to use, so a test can watch it; one is made when left out. */
+	broker?: Broker;
 }
 
 export function asterMcp(opts: AsterMcpOptions = {}): Plugin {
@@ -34,10 +38,19 @@ export function asterMcp(opts: AsterMcpOptions = {}): Plugin {
 		name: 'aster-mcp',
 		// `pnpm dev` only: not the build, not the preview server, not vitest's server.
 		apply: (config, env) =>
-			env.command === 'serve' && !env.isPreview && config.mode !== 'test' && !process.env.VITEST,
+			env.command === 'serve' &&
+			!env.isPreview &&
+			(opts.force === true || (config.mode !== 'test' && !process.env.VITEST)),
 		configureServer(server) {
-			const broker = new Broker(opts.timeoutMs);
+			const broker = opts.broker ?? new Broker(opts.timeoutMs);
 			const key = (client: WebSocketClient): object => client.socket;
+
+			// A socket (re)connected: a tab that loaded before this server started, or one whose
+			// socket came back, says hello again when asked. Only that socket is asked, so the
+			// tabs already here keep their order; only tabs answer.
+			server.ws.on('connection', (socket) =>
+				socket.send(JSON.stringify({ type: 'custom', event: 'aster:who' }))
+			);
 
 			server.ws.on('aster:hello', (data: Hello, client) => {
 				const k = key(client);

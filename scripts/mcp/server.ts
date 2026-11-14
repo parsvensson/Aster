@@ -91,7 +91,7 @@ export function createMcpServer(broker: Broker): McpServer {
 				const status = await broker.request('status', {});
 				return json({
 					...status,
-					tabs: broker.tabs.length,
+					tabs: broker.infos,
 					changes: broker.changesSince(0).length
 				});
 			} catch (e) {
@@ -356,11 +356,10 @@ export function createMcpServer(broker: Broker): McpServer {
 			annotations: { readOnlyHint: true }
 		},
 		async ({ version }) => {
-			const tab = broker.active;
 			return json({
 				changes: broker.changesSince(version),
-				tab: tab ? { ...tab.hello, at: new Date(tab.at).toISOString() } : null,
-				tabs: broker.tabs.length
+				tab: broker.infos.find((t) => t.active) ?? null,
+				tabs: broker.infos
 			});
 		}
 	);
@@ -676,6 +675,24 @@ export function createMcpServer(broker: Broker): McpServer {
 		async (p) => {
 			try {
 				return written(await broker.request('run', p));
+			} catch (e) {
+				return failed(e);
+			}
+		}
+	);
+
+	server.registerTool(
+		'aster_use_tab',
+		{
+			title: 'Aster: choose the tab that answers',
+			description:
+				'When several Aster tabs are open, the one that said hello last (connected, clicked into, or opened a project) answers. This picks another by its url, route or project name, as aster_status lists them under tabs, until the user clicks into one again.',
+			inputSchema: { tab: z.string().describe('A url, route or project name from aster_status.') }
+		},
+		async ({ tab }) => {
+			try {
+				const t = broker.activate(tab);
+				return text(`${t.hello.project} at ${t.hello.url} answers now.`);
 			} catch (e) {
 				return failed(e);
 			}
