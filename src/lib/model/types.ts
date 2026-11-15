@@ -28,7 +28,8 @@ export type StereotypeDisplay =
   | 'icon'
   | 'icon-label';
 
-export type DiagramKind = 'class' | 'object';
+/** 'concept': a concept graph, the same classifiers drawn as named boxes with verbs on the lines. */
+export type DiagramKind = 'class' | 'object' | 'concept';
 
 // ---------------------------------------------------------------------------
 // Model elements

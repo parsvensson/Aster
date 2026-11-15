@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { ToggleGroup } from 'bits-ui';
 	import { DEFAULT_OFFSETS } from '#lib/canvas/edges/geometry.ts';
-	import { labelsFor } from '#lib/canvas/edges/notation.ts';
+	import {
+		conceptDirection,
+		edgeNotation,
+		navigabilityFor,
+		type ConceptDirection
+	} from '#lib/canvas/edges/notation.ts';
 	import {
 		addWaypoint,
 		batch,
@@ -108,8 +113,33 @@
 				] as ['source' | 'target', End, string][])
 			: []
 	);
-	const labelKeys = $derived(labelsFor(rel, projectStore.diagram.defaults));
-	const offsetOf = (key: LabelKey) => layout?.labelOffsets[key] ?? DEFAULT_OFFSETS[key];
+	const labelKeys = $derived(
+		edgeNotation(projectStore.diagram.diagramKind).labels(rel, projectStore.diagram.defaults)
+	);
+	// A concept graph reads a line one way or both (owner's request, 2026-11-15): one control
+	// over the two ends' navigability, which the rows below still show and set one by one.
+	const concept = $derived(projectStore.diagram.diagramKind === 'concept');
+	const directionItems = $derived([
+		{ value: 'both', label: t('direction.both') },
+		{ value: 'forward', label: `${nameOf(rel.sourceId)} → ${nameOf(rel.targetId)}` },
+		{ value: 'backward', label: `${nameOf(rel.targetId)} → ${nameOf(rel.sourceId)}` }
+	]);
+	const setDirection = (v: string) => {
+		const want = navigabilityFor(v as ConceptDirection);
+		const p = projectStore.project;
+		run(batch, {
+			label: t('cmd.setDirection', { direction: directionItems.find((i) => i.value === v)!.label }),
+			commands: [
+				serialise(setEnd(p, { id: rel.id, end: 'source', patch: { navigable: want.source } })),
+				serialise(setEnd(p, { id: rel.id, end: 'target', patch: { navigable: want.target } }))
+			]
+		});
+	};
+	// A label's own default (a concept graph's verbs sit mid-line) before the key's usual one.
+	const offsetOf = (key: LabelKey) =>
+		layout?.labelOffsets[key] ??
+		labelKeys.find((l) => l.key === key)?.offset ??
+		DEFAULT_OFFSETS[key];
 	const isDefault = (key: LabelKey) => !layout?.labelOffsets[key];
 	const anyMoved = $derived(labelKeys.some((l) => !isDefault(l.key)));
 	const deg = (rad: number) => Math.round((rad * 180) / Math.PI);
@@ -205,6 +235,17 @@
 		{#each ends as [end, , owner] (end)}<span class="truncate font-semibold" id="end-{end}"
 				>{owner}</span
 			>{/each}
+		{#if concept}
+			<span class="text-chrome-muted" id="ends-direction">{t('inspector.direction')}</span>
+			<FieldSelect
+				id="rel-direction"
+				class="col-span-2 min-w-0"
+				ariaLabel={t('inspector.direction')}
+				value={conceptDirection(rel) ?? ''}
+				items={directionItems}
+				onchange={setDirection}
+			/>
+		{/if}
 		<span class="text-chrome-muted" id="ends-role">{t('inspector.role')}</span>
 		{#each ends as [end, e] (end)}
 			<Field

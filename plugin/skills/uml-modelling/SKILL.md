@@ -41,6 +41,23 @@ a change to the file from outside (git checkout, pull, stash) reloads the tab.
 - After a round of changes, `aster_validate` and `aster_render` to check the result, and
   `aster_select` with `centre: true` to point the user at what changed.
 
+## Concept graphs
+
+A project can show the same model two ways. A class diagram is UML. A concept graph (diagram
+kind `concept`) draws each class as a rounded box with its name alone and each association as
+an arrow with a verb: the role name on the end the arrow starts from, read towards the other end
+("Sales Plan steers Account Manager" is the role `steers` on the Sales Plan end). Compartments,
+multiplicities and stereotypes stay in the model and start hidden.
+
+- New graph: `aster_add_diagram` with `kind: "concept"`, then `aster_add_to_diagram` with the
+  classes to show; their associations come along. An existing class diagram becomes a graph
+  with `aster_run` and `{ "id": "setDiagramKind", "args": { "diagramId": …, "diagramKind": "concept" } }`.
+- One verb per line draws one arrow; verbs on both ends draw both. To force a reading, set the
+  ends' `navigable` through `aster_connect` or `aster_update`: `notNavigable` on the source end
+  makes the line read source → target only, and only that verb is shown.
+- Compositions and aggregations draw as plain arrows in a graph (the verb says "is part of");
+  generalizations and dependencies keep their UML form.
+
 ## Git
 
 The file on disk is always current, so git works as usual: `git diff --stat` to see that a

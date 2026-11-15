@@ -6,6 +6,8 @@ import {
 	type Classifier,
 	type ClassifierKind,
 	type Diagram,
+	type DiagramKind,
+	type DisplayFlags,
 	type EdgeLayout,
 	type End,
 	type Element,
@@ -49,14 +51,35 @@ export function createProject(init: { id?: Id; name?: string } = {}): Project {
 	};
 }
 
+/**
+ * A concept graph's defaults: boxes carry the name alone and lines the verbs, so compartments,
+ * multiplicities and stereotypes start hidden and names wrap to the box. StarUML reads the same
+ * flags, so the file opens there as a class diagram of named boxes.
+ */
+export const CONCEPT_DISPLAY_FLAGS: DisplayFlags = {
+	...DEFAULT_DISPLAY_FLAGS,
+	showMultiplicity: false,
+	suppressAttributes: true,
+	suppressOperations: true,
+	suppressLiterals: true,
+	stereotypeDisplay: 'none',
+	wordWrap: true
+};
+
+/** The display defaults a new diagram of a kind starts with. */
+export const defaultFlagsFor = (kind: DiagramKind): DisplayFlags => ({
+	...(kind === 'concept' ? CONCEPT_DISPLAY_FLAGS : DEFAULT_DISPLAY_FLAGS)
+});
+
 export function createDiagram(init: Partial<Omit<Diagram, 'layout'>> = {}): Diagram {
+	const diagramKind = init.diagramKind ?? 'class';
 	return {
 		id: init.id ?? newId(),
 		name: init.name ?? t('model.defaultDiagramName'),
-		diagramKind: init.diagramKind ?? 'class',
+		diagramKind,
 		elementIds: init.elementIds ?? [],
 		layout: new Map(),
-		defaults: init.defaults ?? { ...DEFAULT_DISPLAY_FLAGS }
+		defaults: init.defaults ?? defaultFlagsFor(diagramKind)
 	};
 }
 

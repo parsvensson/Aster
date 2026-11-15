@@ -61,6 +61,7 @@
 		pasteFrom,
 		startLink
 	} from './actions.ts';
+	import ConceptNode from './ConceptNode.svelte';
 	import Markers from './edges/Markers.svelte';
 	import UmlEdge from './edges/UmlEdge.svelte';
 	import { center, type Rect } from './edges/geometry.ts';
@@ -77,6 +78,7 @@
 		enum: ClassifierNode,
 		dataType: ClassifierNode,
 		primitiveType: ClassifierNode,
+		concept: ConceptNode,
 		note: NoteNode,
 		text: NoteNode,
 		instance: InstanceNode,
@@ -576,7 +578,11 @@
 			const item = p.elements.get(id);
 			if (l?.kind !== 'node' || !item) return [];
 			// A class grows to its members; the export's metrics say how tall before it is drawn.
-			return [item.kind === 'classifier' ? contentRect(item, { ...d.defaults, ...l.flags }, l) : l];
+			return [
+				item.kind === 'classifier'
+					? contentRect(item, { ...d.defaults, ...l.flags }, l, d.diagramKind === 'concept')
+					: l
+			];
 		});
 		if (!boxes.length) return { x: 0, y: 0, zoom: 1 };
 		const x = Math.min(...boxes.map((b) => b.x));

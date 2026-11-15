@@ -70,7 +70,8 @@ undo step; the inverse of each command is computed when it runs.
 
 | id | args |
 | --- | --- |
-| addDiagram | { diagramId, name, index?, diagramKind?: 'class' \\| 'object' } |
+| addDiagram | { diagramId, name, index?, diagramKind?: 'class' \\| 'object' \\| 'concept' } |
+| setDiagramKind | { diagramId, diagramKind: 'class' \\| 'concept' } — a class diagram shown as a concept graph (named boxes, verbs on the lines), or back; display defaults reset to the notation's |
 | renameDiagram | { diagramId, name } |
 | deleteDiagram | { diagramId } |
 | removeDiagram, restoreDiagram | inverses; not for direct use |

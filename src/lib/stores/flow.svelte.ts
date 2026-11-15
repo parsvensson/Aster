@@ -3,6 +3,7 @@ import { t } from '#lib/i18n/index.ts';
 import { fillOf, lineOf } from '#lib/canvas/paint.ts';
 import { relationshipsByEnd, type RelIndex } from '#lib/canvas/summary.ts';
 import { linkAsRelationship } from '#lib/canvas/edges/notation.ts';
+import { CONCEPT_MIN } from '#lib/canvas/resize.ts';
 import { elementName, PRIMITIVE_TYPES } from '#lib/model/project.ts';
 import type {
 	Classifier,
@@ -36,7 +37,8 @@ export interface ClassifierNodeData extends Record<string, unknown> {
 	fill?: string;
 	line?: string;
 }
-export type ClassifierFlowNode = Node<ClassifierNodeData, ClassifierKind>;
+/** On a concept graph a classifier is a 'concept' node: a rounded box with the name alone (ConceptNode). */
+export type ClassifierFlowNode = Node<ClassifierNodeData, ClassifierKind | 'concept'>;
 
 /** Notes and free text: view-only elements with their own layout (features.md). */
 export interface NoteNodeData extends Record<string, unknown> {
@@ -99,6 +101,8 @@ export interface RelationshipEdgeData extends Record<string, unknown> {
 	flags: DisplayFlags;
 	/** Roving focus sits on this edge (as an element, or as a part of one of its nodes). */
 	focused: boolean;
+	/** Drawn with the concept graph's notation (edges/notation.ts) rather than UML's. */
+	concept: boolean;
 }
 export type RelationshipFlowEdge = Edge<RelationshipEdgeData, 'uml'>;
 /** A note link: dashed, no arrowhead, derived from `Note.linkedIds`. */
@@ -159,6 +163,7 @@ class Flow {
 		const project = projectStore.project;
 		const diagram = projectStore.diagram;
 		const out: FlowNode[] = [];
+		const concept = diagram.diagramKind === 'concept';
 		for (const id of diagram.elementIds) {
 			const el = project.elements.get(id);
 			const l = diagram.layout.get(id);
@@ -167,7 +172,7 @@ class Flow {
 				const flags = { ...diagram.defaults, ...l.flags };
 				out.push({
 					id,
-					type: el.classifierKind,
+					type: concept ? 'concept' : el.classifierKind,
 					position: { x: l.x, y: l.y },
 					data: {
 						// Commands mutate the model in place; a per-version snapshot gives the node
@@ -175,7 +180,7 @@ class Flow {
 						// ponytail: clones every classifier per command; per-element version stamps if 500-node perf needs it
 						classifier: structuredClone(el),
 						flags,
-						minWidth: Math.max(160, l.w),
+						minWidth: Math.max(concept ? CONCEPT_MIN.w : 160, l.w),
 						minHeight: flags.autoResize === false ? l.h : 0,
 						editing: null,
 						link: null,
@@ -289,7 +294,8 @@ class Flow {
 						relationship: rel,
 						layout: structuredClone(l),
 						flags: { ...diagram.defaults },
-						focused: false
+						focused: false,
+						concept: diagram.diagramKind === 'concept'
 					},
 					ariaLabel: t('edge.label', {
 						source: name(el.sourceId),

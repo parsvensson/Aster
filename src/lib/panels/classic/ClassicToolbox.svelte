@@ -14,16 +14,19 @@
 	// Derived, so the labels follow a locale applied after the panel mounted.
 	// An object diagram offers objects instead (M3.2), as StarUML's own toolbox does.
 	const objects = $derived(projectStore.diagram.diagramKind === 'object');
+	const concepts = $derived(projectStore.diagram.diagramKind === 'concept');
 	const ELEMENTS: { tool: Tool; label: string; ready: boolean }[] = $derived(
 		objects
 			? [{ tool: 'object', label: t('ui.tool.object'), ready: true }]
-			: [
-					{ tool: 'class', label: t('ui.tool.class'), ready: true },
-					{ tool: 'interface', label: t('ui.tool.interface'), ready: true },
-					{ tool: 'enum', label: t('ui.tool.enum'), ready: true },
-					{ tool: 'dataType', label: t('ui.tool.dataType'), ready: true },
-					{ tool: 'package', label: t('ui.tool.package'), ready: true }
-				]
+			: concepts
+				? [{ tool: 'class', label: t('ui.tool.class'), ready: true }]
+				: [
+						{ tool: 'class', label: t('ui.tool.class'), ready: true },
+						{ tool: 'interface', label: t('ui.tool.interface'), ready: true },
+						{ tool: 'enum', label: t('ui.tool.enum'), ready: true },
+						{ tool: 'dataType', label: t('ui.tool.dataType'), ready: true },
+						{ tool: 'package', label: t('ui.tool.package'), ready: true }
+					]
 	);
 	const RELS: RelationshipKind[] = [
 		'association',

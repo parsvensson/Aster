@@ -28,8 +28,17 @@
 		{ id: 'select', key: null },
 		{ id: 'object', key: null }
 	];
+	// A concept graph places concepts (classes drawn as named boxes) and links them.
+	const CONCEPT_TOOLS: ToolDef[] = [
+		{ id: 'select', key: null },
+		{ id: 'class', key: 'C' }
+	];
 	const TOOLS = $derived(
-		projectStore.diagram.diagramKind === 'object' ? OBJECT_TOOLS : CLASS_TOOLS
+		projectStore.diagram.diagramKind === 'object'
+			? OBJECT_TOOLS
+			: projectStore.diagram.diagramKind === 'concept'
+				? CONCEPT_TOOLS
+				: CLASS_TOOLS
 	);
 	// A tool the diagram does not offer (switched from a class diagram) goes back to Select.
 	$effect(() => {

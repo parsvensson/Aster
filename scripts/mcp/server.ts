@@ -622,10 +622,10 @@ export function createMcpServer(broker: Broker, instructions?: string): McpServe
 		{
 			title: 'Aster: new diagram',
 			description:
-				'A new, empty class or object diagram in the project; with open true the tab switches to it. Put existing elements on it with aster_add_to_diagram.',
+				'A new, empty diagram in the project; with open true the tab switches to it. Put existing elements on it with aster_add_to_diagram. Kinds: class (UML), object, and concept, a concept graph: the same classes drawn as rounded boxes with the name alone, and each association drawn as an arrow carrying the role name of the end it reads from as a verb ("Sales Plan steers Account Manager"). With both ends\' navigability unspecified a line reads the way of its one named role, or both ways when both are named; set an end notNavigable to close that direction (or run setDiagramKind through aster_run to turn an existing class diagram into a concept graph).',
 			inputSchema: {
 				name: z.string(),
-				kind: z.enum(['class', 'object']).default('class'),
+				kind: z.enum(['class', 'object', 'concept']).default('class'),
 				open: z.boolean().optional()
 			}
 		},

@@ -1,9 +1,12 @@
 /** UML 2.5 notation rules for an edge: which markers, which dash, which labels. */
 import type {
+	DiagramKind,
 	DisplayFlags,
 	End,
 	LabelKey,
+	LabelOffset,
 	Link,
+	Navigability,
 	Relationship,
 	Visibility
 } from '#lib/model/types.ts';
@@ -77,6 +80,8 @@ export interface EdgeLabelSpec {
 	key: LabelKey;
 	at: 'source' | 'target' | 'mid';
 	lines: string[];
+	/** Where the label sits until the user moves it, when not the key's usual place (geometry.ts). */
+	offset?: LabelOffset;
 }
 
 const SYMBOL: Record<Visibility, string> = {
@@ -107,4 +112,125 @@ export function labelsFor(r: Relationship, flags: DisplayFlags): EdgeLabelSpec[]
 			out.push({ key: `${at}Property`, at, lines: [`{${props.join(', ')}}`] });
 	}
 	return out;
+}
+
+// ---------------------------------------------------------------------------
+// Concept graphs (owner's request, 2026-11-15): the same relationships, read as sentences.
+// ---------------------------------------------------------------------------
+
+const ASSOCIATION_FAMILY = new Set(['association', 'aggregation', 'composition']);
+
+export interface ConceptDirections {
+	/** Read from the source to the target: the source end's role is the verb. */
+	forward: boolean;
+	/** Read from the target to the source: the target end's role is the verb. */
+	backward: boolean;
+}
+
+/**
+ * Which way a concept graph reads a relationship. UML navigability decides: an end marked not
+ * navigable closes the reading towards it, and an end marked navigable opens it. With nothing
+ * said at either end (StarUML's default) and a verb on one end only, the line reads that way
+ * alone, so a file whose author named one role per line draws one arrow per line unasked.
+ */
+export function conceptDirections(r: Relationship): ConceptDirections {
+	const s = r.sourceEnd;
+	const t = r.targetEnd;
+	const unspecified = (e: End | undefined) => !e || e.navigable === 'unspecified';
+	const forwardVerb = !!s?.role;
+	const backwardVerb = !!t?.role;
+	// Nothing said about navigability: one verb reads one way, otherwise the line reads both ways.
+	if (unspecified(s) && unspecified(t) && forwardVerb !== backwardVerb)
+		return { forward: forwardVerb, backward: backwardVerb };
+	return { forward: t?.navigable !== 'notNavigable', backward: s?.navigable !== 'notNavigable' };
+}
+
+export type ConceptDirection = 'both' | 'forward' | 'backward';
+
+/** The inspector's one-word reading of the directions, or null when the line reads neither way. */
+export function conceptDirection(r: Relationship): ConceptDirection | null {
+	const d = conceptDirections(r);
+	if (d.forward && d.backward) return 'both';
+	if (d.forward) return 'forward';
+	if (d.backward) return 'backward';
+	return null;
+}
+
+/** The navigability of each end that makes a line read a chosen way, explicit so the verb rule stays out. */
+export function navigabilityFor(direction: ConceptDirection): {
+	source: Navigability;
+	target: Navigability;
+} {
+	switch (direction) {
+		case 'both':
+			return { source: 'navigable', target: 'navigable' };
+		case 'forward':
+			return { source: 'notNavigable', target: 'navigable' };
+		case 'backward':
+			return { source: 'navigable', target: 'notNavigable' };
+	}
+}
+
+/**
+ * A concept graph's markers: an arrowhead at each end the line reads towards, no diamonds and no
+ * ownership dots (the verb says "is part of"). Generalization, realization and dependency keep
+ * their UML form.
+ */
+export function conceptMarkersFor(r: Relationship): Notation {
+	if (!ASSOCIATION_FAMILY.has(r.relationshipKind)) return markersFor(r);
+	const dir = conceptDirections(r);
+	return {
+		start: dir.backward ? 'arrow' : null,
+		end: dir.forward ? 'arrow' : null,
+		dashed: false,
+		dots: []
+	};
+}
+
+/** The verbs sit beside the middle of the line: the forward one on one side, the backward one on the other. */
+export const CONCEPT_OFFSETS: Record<'sourceRole' | 'targetRole', LabelOffset> = {
+	sourceRole: { alpha: Math.PI / 2, distance: 14 },
+	targetRole: { alpha: -Math.PI / 2, distance: 14 }
+};
+
+/**
+ * A concept graph's labels: the name (with «stereotype») at the middle as in UML, the verb of
+ * each direction the line reads, and multiplicities at the ends only when shown. A line that
+ * reads neither way (both ends not navigable) still carries both verbs, so nothing is lost.
+ */
+export function conceptLabelsFor(r: Relationship, flags: DisplayFlags): EdgeLabelSpec[] {
+	if (!ASSOCIATION_FAMILY.has(r.relationshipKind)) return labelsFor(r, flags);
+	const out: EdgeLabelSpec[] = [];
+	const mid = [...(r.stereotype ? [`«${r.stereotype}»`] : []), ...(r.name ? [r.name] : [])];
+	if (mid.length) out.push({ key: 'name', at: 'mid', lines: mid });
+	const dir = conceptDirections(r);
+	const neither = !dir.forward && !dir.backward;
+	if (r.sourceEnd?.role && (dir.forward || neither))
+		out.push({
+			key: 'sourceRole',
+			at: 'mid',
+			lines: [r.sourceEnd.role],
+			offset: CONCEPT_OFFSETS.sourceRole
+		});
+	if (r.targetEnd?.role && (dir.backward || neither))
+		out.push({
+			key: 'targetRole',
+			at: 'mid',
+			lines: [r.targetEnd.role],
+			offset: CONCEPT_OFFSETS.targetRole
+		});
+	if (flags.showMultiplicity)
+		for (const [at, e] of [
+			['source', r.sourceEnd],
+			['target', r.targetEnd]
+		] as const)
+			if (e?.multiplicity) out.push({ key: `${at}Multiplicity`, at, lines: [e.multiplicity] });
+	return out;
+}
+
+/** The notation a diagram kind draws its edges with. */
+export function edgeNotation(kind: DiagramKind) {
+	return kind === 'concept'
+		? { markers: conceptMarkersFor, labels: conceptLabelsFor }
+		: { markers: markersFor, labels: labelsFor };
 }

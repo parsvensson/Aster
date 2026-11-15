@@ -56,6 +56,7 @@ export {
 	restoreDiagram,
 	setColour,
 	setDiagramDefaults,
+	setDiagramKind,
 	setNodeFlags
 } from './display.ts';
 export { addNote, addText, linkNote, setElementText, unlinkNote } from './notes.ts';

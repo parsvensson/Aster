@@ -34,7 +34,7 @@
 	} from './geometry.ts';
 	import { paperFont } from './fonts.svelte.ts';
 	import { textWidth } from './measure.ts';
-	import { MARKER_LENGTH, labelsFor, markersFor, type EdgeLabelSpec } from './notation.ts';
+	import { MARKER_LENGTH, edgeNotation, type EdgeLabelSpec } from './notation.ts';
 
 	let { id, source, target, data, selected }: EdgeProps<RelationshipFlowEdge> = $props();
 	const { screenToFlowPosition } = useSvelteFlow();
@@ -71,7 +71,9 @@
 	);
 	const line = $derived(samplePath(points, style));
 	const d = $derived(pathD(points, style));
-	const notation = $derived(markersFor(rel));
+	// A concept graph reads the same relationship as sentences (notation.ts).
+	const draw = $derived(edgeNotation(data!.concept ? 'concept' : 'class'));
+	const notation = $derived(draw.markers(rel));
 	const zoom = $derived(ui.zoom);
 	// Labels stay at least 10 CSS px tall when zoomed out, so they remain legible at 50 %.
 	const fontSize = $derived(Math.max(12, 10 / zoom));
@@ -87,12 +89,12 @@
 		if (points.length < 2) return [];
 		void paperFont.ready; // re-measure once the paper font is in
 		const placed: Rect[] = [];
-		return labelsFor(rel, data!.flags).map((spec) => {
+		return draw.labels(rel, data!.flags).map((spec) => {
 			const frame = spec.at === 'mid' ? midFrame(points, style) : endFrame(line, spec.at);
 			const offset =
 				draftLabel?.key === spec.key
 					? draftLabel.offset
-					: (layout.labelOffsets[spec.key] ?? DEFAULT_OFFSETS[spec.key]);
+					: (layout.labelOffsets[spec.key] ?? spec.offset ?? DEFAULT_OFFSETS[spec.key]);
 			const w = Math.max(...spec.lines.map((l) => textWidth(l, fontSize))) + 6;
 			const h = spec.lines.length * lineHeight;
 			const node = spec.at === 'source' ? src : spec.at === 'target' ? tgt : null;

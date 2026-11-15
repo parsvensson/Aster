@@ -135,6 +135,15 @@ const LINE_STYLES: LineStyle[] = ['rectilinear', 'oblique', 'roundrect', 'curve'
 const VISIBILITIES = new Set<Visibility>(['public', 'protected', 'private', 'package']);
 
 /** What StarUML assumes when a view leaves a flag out (it omits defaults since v4). */
+/**
+ * A concept graph (owner's request, 2026-11-15) is a `UMLClassDiagram` carrying a StarUML Tag of
+ * this name with the value 'concept': StarUML keeps tags, so the file opens there unchanged, and
+ * Aster reads the kind back. The tag itself is kept as an Unknown at `tags`, so its id is stable.
+ */
+export const CONCEPT_TAG = 'aster.diagramKind';
+export const isConceptTag = (v: unknown): boolean =>
+	isObj(v) && v._type === 'Tag' && v.name === CONCEPT_TAG && v.value === 'concept';
+
 export const STARUML_VIEW_DEFAULTS: DisplayFlags = {
 	...DEFAULT_DISPLAY_FLAGS,
 	showProperty: true,
@@ -665,7 +674,12 @@ class Parser {
 		const d: Diagram = {
 			id: o._id as Id,
 			name: str(o.name) ?? '',
-			diagramKind: o._type === 'UMLObjectDiagram' ? 'object' : 'class',
+			diagramKind:
+				o._type === 'UMLObjectDiagram'
+					? 'object'
+					: arr(o.tags).some(isConceptTag)
+						? 'concept'
+						: 'class',
 			elementIds: [],
 			layout: new Map(),
 			defaults: { ...STARUML_VIEW_DEFAULTS }

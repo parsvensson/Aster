@@ -16,12 +16,7 @@ import {
 	type Rect
 } from '#lib/canvas/edges/geometry.ts';
 import { textWidth } from '#lib/canvas/edges/measure.ts';
-import {
-	MARKER_LENGTH,
-	labelsFor,
-	linkAsRelationship,
-	markersFor
-} from '#lib/canvas/edges/notation.ts';
+import { MARKER_LENGTH, edgeNotation, linkAsRelationship } from '#lib/canvas/edges/notation.ts';
 import { membersOf } from '#lib/commands/index.ts';
 import { renderMember, type MemberKind } from '#lib/mdj/expression.ts';
 import { instanceLabel, namespaceOf } from '#lib/model/project.ts';
@@ -79,8 +74,10 @@ const n = (v: number) => String(Math.round(v * 100) / 100);
 export function contentRect(
 	c: Classifier,
 	flags: Diagram['defaults'],
-	l: { x: number; y: number; w: number }
+	l: { x: number; y: number; w: number; h?: number },
+	concept = false
 ): Rect {
+	if (concept) return conceptRect(c, l, flags.autoResize !== false);
 	const header = flags.stereotypeDisplay === 'none' ? undefined : headerLabel(c);
 	let h = header ? STEREO_ROW : NAME_ROW;
 	let w = Math.max(textWidth(c.name, 13) * 1.06, header ? textWidth(`«${header}»`, 12) : 0);
@@ -106,6 +103,25 @@ export function contentRect(
 	return { x: l.x, y: l.y, w: Math.max(160, l.w, Math.ceil(w + PAD_X * 2)), h };
 }
 
+/** ConceptNode's box (owner's request, 2026-11-15): 120 × 48 at least, radius 12, the name wrapped inside 12 px of padding. */
+export const CONCEPT = { minW: 120, minH: 48, pad: 12, padY: 10, line: 18, radius: 12 };
+
+/**
+ * A concept's rectangle: the stored width holds and the name wraps in it; the height is the
+ * wrapped name's, or at least the stored one when the view's autoResize is off (as ConceptNode).
+ */
+export function conceptRect(
+	c: Classifier,
+	l: { x: number; y: number; w: number; h?: number },
+	autoResize = true
+): Rect {
+	const w = Math.max(CONCEPT.minW, l.w);
+	const lines = wrapLines(c.name, 13, w - CONCEPT.pad * 2);
+	const least = autoResize ? 0 : (l.h ?? 0);
+	const h = Math.max(CONCEPT.minH, least, lines.length * CONCEPT.line + CONCEPT.padY * 2);
+	return { x: l.x, y: l.y, w, h };
+}
+
 /** A node's display flags: its own over the diagram's, as the canvas reads them (flow.svelte.ts). */
 const flagsOf = (diagram: Diagram, id: Id): Diagram['defaults'] => {
 	const l = diagram.layout.get(id);
@@ -119,7 +135,7 @@ export function contentRects(project: Project, diagram: Diagram): Map<Id, Rect> 
 		const el = project.elements.get(id);
 		const l = diagram.layout.get(id);
 		if (el?.kind === 'classifier' && l?.kind === 'node')
-			out.set(id, contentRect(el, flagsOf(diagram, id), l));
+			out.set(id, contentRect(el, flagsOf(diagram, id), l, diagram.diagramKind === 'concept'));
 	}
 	return out;
 }
@@ -226,6 +242,21 @@ function nodeSvg(
 	out.push('</g>');
 }
 
+/** A concept: ConceptNode's rounded box with the name alone, wrapped and centred. */
+function conceptSvg(c: Classifier, r: Rect, paint: Paint, out: string[]) {
+	const lines = wrapLines(c.name, 13, r.w - CONCEPT.pad * 2);
+	const top = r.y + (r.h - lines.length * CONCEPT.line) / 2;
+	out.push(
+		`<g class="concept" data-name="${esc(c.name)}"><rect x="${n(r.x)}" y="${n(r.y)}" width="${n(r.w)}" height="${n(r.h)}" rx="${CONCEPT.radius}" fill="${paint.fill}" stroke="${paint.line}"/>`
+	);
+	lines.forEach((line, i) =>
+		out.push(
+			`<text x="${n(r.x + r.w / 2)}" y="${n(top + i * CONCEPT.line + 13.5)}" text-anchor="middle" font-size="13" font-weight="600"${c.isAbstract ? ' font-style="italic"' : ''}>${esc(line)}</text>`
+		)
+	);
+	out.push('</g>');
+}
+
 /** A package: the name in a tab over the frame (PackageNode's shape). */
 function packageSvg(p: Package, r: Rect, paint: Paint, out: string[]) {
 	const tw = Math.max(80, r.w * 0.4);
@@ -280,7 +311,8 @@ function edgeSvg(
 	flags: Diagram['defaults'],
 	background: SvgOptions['background'],
 	out: string[],
-	bounds: Rect[]
+	bounds: Rect[],
+	draw = edgeNotation('class')
 ) {
 	const style = layout.lineStyle;
 	const ink = lineOf(layout);
@@ -288,7 +320,7 @@ function edgeSvg(
 	const points = route(src, tgt, layout.waypoints, style, rel.sourceId === rel.targetId).points;
 	if (points.length < 2) return;
 	const line = samplePath(points, style);
-	const notation = markersFor(rel);
+	const notation = draw.markers(rel);
 	const url = (m: string) => `url(#${markerId(m, ink)})`;
 	out.push(
 		`<g class="edge" data-rel-id="${esc(rel.id)}"><path d="${pathD(points, style)}" fill="none" stroke="${stroke}"${notation.dashed ? ' stroke-dasharray="6 4"' : ''}${notation.start ? ` marker-start="${url(notation.start)}"` : ''}${notation.end ? ` marker-end="${url(notation.end)}"` : ''}/>`
@@ -303,9 +335,9 @@ function edgeSvg(
 	}
 	// Labels as the canvas places them: clear of their line, their end node and each other.
 	const placed: Rect[] = [];
-	for (const spec of labelsFor(rel, flags)) {
+	for (const spec of draw.labels(rel, flags)) {
 		const frame = spec.at === 'mid' ? midFrame(points, style) : endFrame(line, spec.at);
-		const offset = layout.labelOffsets[spec.key] ?? DEFAULT_OFFSETS[spec.key];
+		const offset = layout.labelOffsets[spec.key] ?? spec.offset ?? DEFAULT_OFFSETS[spec.key];
 		const w = Math.max(...spec.lines.map((l) => textWidth(l, LABEL_FONT))) + 6;
 		const h = spec.lines.length * LABEL_LINE;
 		const node = spec.at === 'source' ? src : spec.at === 'target' ? tgt : null;
@@ -385,7 +417,12 @@ export function diagramToSvg(
 		packageSvg(p, r, paintOf(diagram.layout.get(p.id)), body);
 		bounds.push(r);
 	}
+	const concept = diagram.diagramKind === 'concept';
 	for (const [c, r] of nodes) {
+		if (concept) {
+			conceptSvg(c, r, paintOf(diagram.layout.get(c.id)), body);
+			continue;
+		}
 		const f = flagsOf(diagram, c.id);
 		const ns = f.showNamespace ? namespaceOf(project, c) : undefined;
 		nodeSvg(c, r, f, paintOf(diagram.layout.get(c.id)), body, ns);
@@ -435,7 +472,17 @@ export function diagramToSvg(
 		const tgt = shown.get(el.targetId);
 		if (!src || !tgt) continue;
 		const rel = el.kind === 'link' ? linkAsRelationship(el) : el;
-		edgeSvg(rel, l, src, tgt, diagram.defaults, opts.background, body, bounds);
+		edgeSvg(
+			rel,
+			l,
+			src,
+			tgt,
+			diagram.defaults,
+			opts.background,
+			body,
+			bounds,
+			edgeNotation(diagram.diagramKind)
+		);
 		const ink = lineOf(l);
 		if (ink) colours.add(ink);
 	}

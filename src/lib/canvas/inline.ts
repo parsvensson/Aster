@@ -57,6 +57,8 @@ export function headerLabel(c: Classifier): string | undefined {
 }
 
 const classifier = (id: Id) => getClassifier(projectStore.project, id);
+/** A concept graph's box has the name alone: ↩, Tab and ⌘↩ on it commit and end (ConceptNode). */
+const conceptGraph = () => projectStore.diagram.diagramKind === 'concept';
 
 export function edit(id: Id, target: EditTarget) {
 	selection.set([id]);
@@ -130,6 +132,7 @@ export function lineEnter(id: Id, kind: MemberKind, index: number, text: string)
 /** ↩ on the name: commit, then open a new line in the first compartment. */
 export function nameEnter(id: Id, text: string) {
 	commitName(id, text);
+	if (conceptGraph()) return endEditing();
 	const c = classifier(id);
 	// Interfaces are operations by default (features.md); the rest start with their first compartment.
 	const first = c.classifierKind === 'interface' ? 'operation' : compartmentsFor(c)[0];
@@ -139,6 +142,10 @@ export function nameEnter(id: Id, text: string) {
 /** Tab / ⇧Tab: commit, then move to the next / previous part (name, then each compartment). */
 export function moveCompartment(id: Id, from: EditTarget, text: string, backwards: boolean) {
 	if (from.part === 'text') return; // notes and text have one field
+	if (conceptGraph() && from.part === 'name') {
+		commitName(id, text);
+		return endEditing();
+	}
 	// The parts as they were: emptying an enum's last attribute removes that compartment,
 	// and the move is still "the one after it".
 	const parts: EditTarget['part'][] = ['name', ...compartmentsFor(classifier(id))];
@@ -156,6 +163,10 @@ export function moveCompartment(id: Id, from: EditTarget, text: string, backward
  */
 export function addLineBelow(id: Id, from: EditTarget, text: string, kind: MemberKind) {
 	if (from.part === 'text') return;
+	if (conceptGraph() && from.part === 'name') {
+		commitName(id, text);
+		return endEditing();
+	}
 	let index: number;
 	if (from.part === 'name') {
 		commitName(id, text);

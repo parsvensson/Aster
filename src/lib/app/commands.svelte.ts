@@ -38,7 +38,7 @@ import { serialise } from '#lib/commands/registry.ts';
 import { copyDiagramAsPng } from '#lib/export/actions.ts';
 import { t, type MessageKey } from '#lib/i18n/index.ts';
 import { newId } from '#lib/model/ids.ts';
-import type { ClassifierKind, DisplayFlags, Id, LineStyle } from '#lib/model/types.ts';
+import type { ClassifierKind, DiagramKind, DisplayFlags, Id, LineStyle } from '#lib/model/types.ts';
 import {
 	newProject,
 	openFromPicker,
@@ -256,8 +256,14 @@ const sheetRow = (
 });
 
 /** A new diagram of a kind, named after the default and numbered past the last; it opens. */
-function newDiagramOf(diagramKind: 'class' | 'object') {
-	const base = t(diagramKind === 'object' ? 'model.newObjectDiagramName' : 'model.newDiagramName');
+function newDiagramOf(diagramKind: DiagramKind) {
+	const base = t(
+		diagramKind === 'object'
+			? 'model.newObjectDiagramName'
+			: diagramKind === 'concept'
+				? 'model.newConceptDiagramName'
+				: 'model.newDiagramName'
+	);
 	const names = projectStore.project.diagrams.map((d) => d.name);
 	let n = projectStore.project.diagrams.length + 1;
 	while (names.includes(`${base} ${n}`)) n++;
@@ -822,6 +828,17 @@ export const COMMANDS: AppCommand[] = [
 		context: 'global',
 		inText: true,
 		run: () => newDiagramOf('object')
+	},
+	{
+		// A concept graph (owner's request, 2026-11-15): the same classifiers, drawn as named boxes
+		// with verbs on the lines. No key; the palette, the Outline and the Diagram tab reach it.
+		id: 'diagram.addConcept',
+		group: 'view',
+		label: () => t('ui.addConceptDiagram'),
+		keys: [],
+		context: 'global',
+		inText: true,
+		run: () => newDiagramOf('concept')
 	},
 	{
 		id: 'diagram.rename',

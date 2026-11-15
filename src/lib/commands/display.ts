@@ -2,6 +2,7 @@
 import { t } from '#lib/i18n/index.ts';
 import {
 	createDiagram,
+	defaultFlagsFor,
 	elementName,
 	getDiagram,
 	getElement,
@@ -147,6 +148,30 @@ export const removeDiagram: Factory<{ diagramId: Id }> = define(
 		}
 	})
 );
+
+/**
+ * A class diagram shown as a concept graph, or back (owner's request, 2026-11-15): the kind and
+ * the display defaults change together, since each notation starts from its own; the inverse
+ * restores both. An object diagram holds objects, not classifiers, so it never switches.
+ */
+export const setDiagramKind: Factory<{
+	diagramId: Id;
+	diagramKind: DiagramKind;
+	/** The defaults to restore; set by the inverse only. */
+	defaults?: DisplayFlags;
+}> = define('setDiagramKind', (project, { diagramId, diagramKind, defaults }) => ({
+	label: t('cmd.setDiagramKind', { kind: t(`diagramKind.${diagramKind}`) }),
+	touches: [],
+	apply(p): Command {
+		const d = getDiagram(p, diagramId);
+		if (d.diagramKind === 'object' || diagramKind === 'object')
+			throw new Error('An object diagram keeps its kind.');
+		const previous = { diagramKind: d.diagramKind, defaults: d.defaults };
+		d.diagramKind = diagramKind;
+		d.defaults = defaults ?? defaultFlagsFor(diagramKind);
+		return setDiagramKind(p, { diagramId, ...previous });
+	}
+}));
 
 /** The project's own name (StarUML's project field, not the file name). */
 export const renameProject: Factory<{ name: string }> = define(

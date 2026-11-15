@@ -296,8 +296,8 @@
 		await focusRow(id);
 		editing = { kind: 'rename', rowId: id };
 	}
-	async function newDiagram() {
-		runCommand('diagram.add');
+	async function newDiagram(command: 'diagram.add' | 'diagram.addConcept' = 'diagram.add') {
+		runCommand(command);
 		expanded.add(ROOT);
 		const id = diagramRowId(projectStore.activeDiagramId);
 		await focusRow(id);
@@ -389,7 +389,15 @@
 		});
 		switch (row.type) {
 			case 'project':
-				return [renameIt, { label: t('outline.addDiagram'), keys: keys('⌘⇧↩'), run: newDiagram }];
+				return [
+					renameIt,
+					{ label: t('outline.addDiagram'), keys: keys('⌘⇧↩'), run: () => newDiagram() },
+					{
+						label: t('ui.addConceptDiagram'),
+						keys: [],
+						run: () => newDiagram('diagram.addConcept')
+					}
+				];
 			case 'diagram':
 				return [
 					renameIt,
@@ -404,7 +412,7 @@
 								keys: keys('⌘⇧↩'),
 								run: () => newClass(row.diagramId!)
 							},
-					{ label: t('outline.addDiagram'), keys: keys('⌘↩'), run: newDiagram },
+					{ label: t('outline.addDiagram'), keys: keys('⌘↩'), run: () => newDiagram() },
 					{
 						label: t('ui.deleteDiagram'),
 						keys: keys('⌫', 'Delete'),

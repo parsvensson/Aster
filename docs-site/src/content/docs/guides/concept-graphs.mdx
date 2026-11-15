@@ -1,0 +1,29 @@
+---
+title: Concept graphs
+description: Show the same model as a concept graph, with named boxes and verbs on the lines, beside its class diagrams.
+sidebar:
+  order: 8
+---
+
+A concept graph is a class diagram stripped to what a reader needs: each class is a rounded box with its name alone, and each association is an arrow with a verb, so the graph reads as sentences. "Sales Plan steers Account Manager" is the association between the two classes, with `steers` as the role name on the Sales Plan end. One project can hold class diagrams and concept graphs of the same classes; a change to a class or a role shows on all of them.
+
+## Make one
+
+- **A new graph.** In the command palette (<Key k="⌘K" />) choose **Add concept graph**, or use the project row's menu in the Outline. Then put classes on it: press <Key k="C" /> for a new one, or drag classes in from the Outline. Their associations come along.
+- **An existing diagram.** Open the inspector's **Diagram** tab and set **Shown as** to *Concept graph*. The classes and lines stay where they are; the boxes shrink to their names and the lines show their verbs. *Class diagram* turns it back.
+
+Switching resets the diagram's display defaults to the notation's own: compartments, multiplicities and stereotypes start hidden on a graph. They are still in the model, and the display toggles (<Key k="⌘⇧M" /> for multiplicities, for example) bring them back.
+
+## Which way a line reads
+
+A line reads in the direction of its verb. Set the verb as the **Role** of the end it starts from, in the relationship inspector's **Ends** section or by double-clicking near that end on the canvas.
+
+- One role named: one arrow, that verb.
+- Both roles named: the line reads both ways, with an arrowhead at each end and one verb on each side of the line.
+- To force a reading, use **Reads** at the top of the Ends section: *Both ways*, or one of the two directions. Only the verb of a shown direction is drawn. Under the hood this sets the ends' UML navigability, so it round-trips to StarUML.
+
+Aggregations and compositions draw as plain arrows on a graph; the verb says what the diamond would. Generalizations and dependencies keep their UML look.
+
+## In the file
+
+A concept graph is saved in `.mdj` as a class diagram with a tag, so StarUML opens the same file and shows the diagram as a class diagram of named boxes. In Aster it opens as a graph again.

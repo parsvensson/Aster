@@ -10,10 +10,13 @@ export interface Size {
 	h: number;
 }
 
+/** The least a concept box takes: room for a two-line name (owner's request, 2026-11-15). */
+export const CONCEPT_MIN: Size = { w: 120, h: 48 };
+
 /** The least a box of each kind takes (ui.md): a class 160 wide, an object 120, a note 120 × 60. */
-export function leastSize(kind: Element['kind'] | undefined): Size {
+export function leastSize(kind: Element['kind'] | undefined, concept = false): Size {
 	if (kind === 'package') return PACKAGE_MIN;
-	if (kind === 'classifier') return { w: 160, h: 40 };
+	if (kind === 'classifier') return concept ? CONCEPT_MIN : { w: 160, h: 40 };
 	if (kind === 'instance') return { w: 120, h: 40 };
 	if (kind === 'text') return { w: 120, h: 24 };
 	return { w: 120, h: 60 };
@@ -34,7 +37,7 @@ export function resizeView(
 	const d = getDiagram(p, diagramId);
 	const l = getNodeLayout(d, id);
 	const kind = p.elements.get(id)?.kind;
-	const min = leastSize(kind);
+	const min = leastSize(kind, d.diagramKind === 'concept');
 	const w = Math.max(min.w, Math.round(size.w));
 	const h = size.h === undefined ? l.h : Math.max(min.h, Math.round(size.h));
 	if (w === l.w && h === l.h) return [];

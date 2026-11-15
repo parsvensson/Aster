@@ -36,7 +36,13 @@ import {
 	type Visibility
 } from '#lib/model/types.ts';
 import { renderMember } from './expression.ts';
-import { SOURCE_PATH, STARUML_VIEW_DEFAULTS, parsePoints } from './parse.ts';
+import {
+	CONCEPT_TAG,
+	SOURCE_PATH,
+	STARUML_VIEW_DEFAULTS,
+	isConceptTag,
+	parsePoints
+} from './parse.ts';
 
 type Json = Record<string, unknown>;
 type Rect = { x: number; y: number; w: number; h: number };
@@ -228,6 +234,40 @@ class Serializer {
 		this.records.set(id, json);
 		this.recordIndex.set(id, 0);
 		return id;
+	}
+
+	/**
+	 * A concept graph carries its Tag (parse.ts CONCEPT_TAG) among the diagram's `tags`, kept as
+	 * an Unknown so its id survives every save; the tag is added when the kind is 'concept' and
+	 * none is there, and dropped when the diagram is a class diagram again.
+	 */
+	conceptTag(d: Diagram) {
+		const byPath = this.kids.get(d.id) ?? new Map<string, Unknown[]>();
+		const tags = byPath.get('tags') ?? [];
+		const existing = tags.find((u) => isConceptTag(u.json));
+		if (d.diagramKind === 'concept' && !existing) {
+			const json: Json = {
+				_type: 'Tag',
+				_id: newId(),
+				_parent: ref(d.id),
+				name: CONCEPT_TAG,
+				kind: 'string',
+				value: 'concept'
+			};
+			const u: Unknown = { json, parentId: d.id, path: 'tags', index: Number.POSITIVE_INFINITY };
+			this.project.unknown.push(u);
+			byPath.set('tags', [...tags, u]);
+			this.kids.set(d.id, byPath);
+			this.unknownJson.add(json);
+			this.indexTree(json);
+		} else if (d.diagramKind !== 'concept' && existing) {
+			const i = this.project.unknown.indexOf(existing);
+			if (i >= 0) this.project.unknown.splice(i, 1);
+			byPath.set(
+				'tags',
+				tags.filter((u) => u !== existing)
+			);
+		}
 	}
 
 	// ---- naming and references ---------------------------------------------
@@ -430,6 +470,7 @@ class Serializer {
 				this.parentOf(d)
 			);
 			this.setStr(o, this.records.get(d.id), 'name', d.name);
+			this.conceptTag(d);
 			diagramJson.set(d.id, o);
 			own(this.parentOf(d), { json: o, index: this.indexOf(d.id) });
 		}

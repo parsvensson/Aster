@@ -431,7 +431,7 @@ const diagram = strict<
 	{
 		id: str,
 		name: str,
-		diagramKind: oneOf(['class', 'object'] as const),
+		diagramKind: oneOf(['class', 'object', 'concept'] as const),
 		elementIds: arrayOf(str),
 		layout: recordOf(layout),
 		defaults: displayFlags
