@@ -1,0 +1,1 @@
+export{r as loadTemplate,s as templateProject}from"./1H3biEKa.js";

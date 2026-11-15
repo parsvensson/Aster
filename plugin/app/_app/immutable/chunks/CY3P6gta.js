@@ -1,1 +1,0 @@
-export{r as loadTemplate,s as templateProject}from"./DdWDZjh5.js";

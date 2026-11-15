@@ -22251,7 +22251,8 @@ undo step; the inverse of each command is computed when it runs.
 
 | id | args |
 | --- | --- |
-| addDiagram | { diagramId, name, index?, diagramKind?: 'class' \\| 'object' } |
+| addDiagram | { diagramId, name, index?, diagramKind?: 'class' \\| 'object' \\| 'concept' } |
+| setDiagramKind | { diagramId, diagramKind: 'class' \\| 'concept' } — a class diagram shown as a concept graph (named boxes, verbs on the lines), or back; display defaults reset to the notation's |
 | renameDiagram | { diagramId, name } |
 | deleteDiagram | { diagramId } |
 | removeDiagram, restoreDiagram | inverses; not for direct use |
@@ -22783,10 +22784,14 @@ function createMcpServer(broker, instructions) {
 	});
 	server.registerTool("aster_add_diagram", {
 		title: "Aster: new diagram",
-		description: "A new, empty class or object diagram in the project; with open true the tab switches to it. Put existing elements on it with aster_add_to_diagram.",
+		description: "A new, empty diagram in the project; with open true the tab switches to it. Put existing elements on it with aster_add_to_diagram. Kinds: class (UML), object, and concept, a concept graph: the same classes drawn as rounded boxes with the name alone, and each association drawn as an arrow carrying the role name of the end it reads from as a verb (\"Sales Plan steers Account Manager\"). With both ends' navigability unspecified a line reads the way of its one named role, or both ways when both are named; set an end notNavigable to close that direction (or run setDiagramKind through aster_run to turn an existing class diagram into a concept graph).",
 		inputSchema: {
 			name: string(),
-			kind: _enum(["class", "object"]).default("class"),
+			kind: _enum([
+				"class",
+				"object",
+				"concept"
+			]).default("class"),
 			open: boolean().optional()
 		}
 	}, async (p) => {

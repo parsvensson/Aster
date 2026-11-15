@@ -185,7 +185,8 @@
 				"diagramKind": {
 					"enum": [
 						"class",
-						"object"
+						"object",
+						"concept"
 					]
 				},
 				"elementIds": {
